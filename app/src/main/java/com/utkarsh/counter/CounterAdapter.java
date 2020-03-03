@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
+import com.utkarsh.counter.Data.ItemContract;
+
 public class CounterAdapter extends CursorAdapter {
 
     public CounterAdapter(Context context, Cursor c) {
@@ -26,8 +28,8 @@ public class CounterAdapter extends CursorAdapter {
         TextView priceTextView = view.findViewById(R.id.price_textView);
         TextView quantityTextView = view.findViewById(R.id.quantity_textView);
 
-        nameTextView.setText();
-        priceTextView.setText();
-        quantityTextView.setText();
+        nameTextView.setText(cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.NAME_COLUMN)));
+        priceTextView.setText(cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.PRICE_COLUMN)));
+        quantityTextView.setText(cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.QUANTITY_COLUMN)));
     }
 }

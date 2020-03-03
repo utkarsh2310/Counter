@@ -19,7 +19,7 @@
         </activity>
         
         <provider
-            android:authorities="com.utkarsh.counter.Data"
+            android:authorities="com.utkarsh.counter"
             android:name=".Data.ItemProvider"
             android:exported="false"/>
     </application>

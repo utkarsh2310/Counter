@@ -1,16 +1,16 @@
 package com.utkarsh.counter.Data;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.ProxyInfo;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.PluralsRes;
+
 
 public class ItemProvider extends ContentProvider {
 
@@ -24,8 +24,8 @@ public class ItemProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
-        sUriMatcher.addURI(ItemContract.CONTENT_AUTHORITY, ItemContract.PATH,100);
-        sUriMatcher.addURI(ItemContract.CONTENT_AUTHORITY,ItemContract.PATH + "/#",101);
+        sUriMatcher.addURI(ItemContract.CONTENT_AUTHORITY, ItemContract.PATH,ITEM);
+        sUriMatcher.addURI(ItemContract.CONTENT_AUTHORITY,ItemContract.PATH + "/#",ITEM_COLUMN);
     }
 
     @Override
@@ -36,7 +36,36 @@ public class ItemProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        return null;
+        itemDbHelper = new ItemDbHelper(getContext());
+        db = itemDbHelper.getReadableDatabase();
+
+        int match = sUriMatcher.match(uri);
+        Cursor cursor;
+        switch (match) {
+            case ITEM:
+                cursor = db.query(ItemContract.ItemEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            case ITEM_COLUMN:
+               selection = ItemContract.ItemEntry._ID + "=?";
+               selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri))};
+               cursor = db.query(ItemContract.ItemEntry.TABLE_NAME,
+                       projection,
+                       selection,
+                       selectionArgs,
+                       null,
+                       null,
+                       sortOrder);
+               break;
+               default:
+                   throw new IllegalArgumentException("not found");
+        }
+        return cursor;
     }
 
     @Nullable
@@ -52,8 +81,18 @@ public class ItemProvider extends ContentProvider {
         itemDbHelper = new ItemDbHelper(getContext());
         db = itemDbHelper.getWritableDatabase();
 
+        int match = sUriMatcher.match(uri);
+        switch (match) {
+            case ITEM:
+                return insertItem(uri,values);
+            default:
+                throw new IllegalArgumentException("Cannot be inserted");
+        }
+    }
+
+    public Uri insertItem(Uri uri,ContentValues values) {
         long id = db.insert(ItemContract.ItemEntry.TABLE_NAME,null,values);
-        return ;
+        return ContentUris.withAppendedId(uri,id);
     }
 
     @Override
