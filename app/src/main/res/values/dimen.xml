@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="item_width">100dp</dimen>
+    <dimen name="edit_width">258dp</dimen>
+    <dimen name="margin_left">12dp</dimen>
+</resources>
